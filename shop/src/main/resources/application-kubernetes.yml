@@ -1,0 +1,15 @@
+app:
+  services:
+    orders: http://tap-otel-orders:8080
+    items: http://tap-otel-items:8080
+
+server:
+  port: ${PORT:8080}
+
+management:
+  tracing:
+    enabled: true
+  otlp:
+    metrics:
+      export:
+        enabled: true

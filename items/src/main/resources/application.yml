@@ -1,0 +1,27 @@
+management:
+  metrics:
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true
+    tags:
+      application: tap-otel-demo
+      service: ${spring.application.name}
+      source: ${spring.application.name}-${random.uuid}
+  tracing:
+    enabled: false
+    sampling:
+      probability: 1
+  otlp:
+    metrics:
+      export:
+        enabled: false
+        step: 30s
+logging:
+  pattern:
+    level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
+
+spring:
+  application:
+    name: tap-otel-items
+server:
+  port: ${PORT:8082}

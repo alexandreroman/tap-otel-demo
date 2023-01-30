@@ -1,0 +1,21 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: tap-otel-demo
+  description: OpenTelemetry demo with TAP
+  tags:
+  - app-accelerator
+  - java
+  - spring
+  - web
+  - tanzu
+  annotations:
+    'backstage.io/kubernetes-label-selector': 'app.kubernetes.io/part-of=tap-otel-demo'
+  links:
+  - url: https://longboard.wavefront.com/dashboards/integration-kubernetes-clusters
+    title: Dashboard Aria for Apps
+    icon: dashboard
+spec:
+  type: service
+  lifecycle: experimental
+  owner: default-team

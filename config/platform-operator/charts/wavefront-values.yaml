@@ -1,0 +1,27 @@
+#! kubectl apply -f config/platform-operator/wavefront-ns.yaml -f config/platform-operator/wavefront-pvc.yaml
+#! envsubst < config/platform-operator/charts/wavefront-values.yaml > /tmp/wavefront-values.yaml
+#! helm upgrade wavefront -n wavefront --install --version 4.2.9 -f /tmp/wavefront-values.yaml bitnami/wavefront
+clusterName: aro-az-tap
+wavefront:
+  url: $WAVEFRONT_API
+  token: $WAVEFRONT_TOKEN
+collector:
+  apiServerMetrics: false
+  hostOSMetrics: true
+proxy:
+  zipkinPort: 9411
+  args: --buffer /wavefront-buffer/buffer
+  updateStrategy:
+    type: Recreate
+  resources:
+    requests:
+      memory: 2G
+    limits:
+      memory: 2G
+  extraVolumes:
+  - name: wavefront-buffer
+    persistentVolumeClaim:
+      claimName: wavefront-buffer
+  extraVolumeMounts:
+  - mountPath: /wavefront-buffer
+    name: wavefront-buffer

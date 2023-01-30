@@ -1,0 +1,49 @@
+#! Install OpenTelemetry Operator first:
+#! $ helm repo add open-telemetry https://open-telemetry.github.io/opentelemetry-helm-charts
+#! $ helm repo update
+#! $ helm upgrade opentelemetry-operator -n opentelemetry-operator-system --create-namespace --install --version 0.21.4 --set manager.collectorImage.tag=0.70.0 open-telemetry/opentelemetry-operator
+apiVersion: opentelemetry.io/v1alpha1
+kind: OpenTelemetryCollector
+metadata:
+  name: otel
+spec:
+  mode: sidecar
+  config: |
+    receivers:
+      otlp:
+        protocols:
+          grpc:
+          http:
+      zipkin:
+
+    processors:
+      batch:
+        timeout: 10s
+      memory_limiter:
+        check_interval: 1s
+        limit_percentage: 50
+        spike_limit_percentage: 30
+      resource:
+        attributes:
+        - key: application
+          value: tap-otel-demo
+          action: upsert
+
+    exporters:
+      logging:
+        logLevel: info
+      tanzuobservability:
+        traces:
+          endpoint: http://wavefront-proxy.wavefront.svc.cluster.local:2878
+        metrics:
+          endpoint: http://wavefront-proxy.wavefront.svc.cluster.local:2878
+    service:
+      pipelines:
+        traces:
+          receivers: [zipkin]
+          processors: [resource, memory_limiter, batch]
+          exporters: [tanzuobservability, logging]
+        metrics:
+          receivers: [otlp]
+          processors: [resource, memory_limiter, batch]
+          exporters: [tanzuobservability, logging]

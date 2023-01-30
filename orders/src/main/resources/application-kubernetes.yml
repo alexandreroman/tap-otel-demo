@@ -1,0 +1,10 @@
+server:
+  port: ${PORT:8080}
+
+management:
+  tracing:
+    enabled: true
+  otlp:
+    metrics:
+      export:
+        enabled: true

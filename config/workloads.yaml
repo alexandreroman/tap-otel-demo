@@ -1,0 +1,102 @@
+apiVersion: carto.run/v1alpha1
+kind: Workload
+metadata:
+  name: tap-otel-shop
+  labels:
+    apps.tanzu.vmware.com/workload-type: web
+    apps.tanzu.vmware.com/has-tests: "true"
+    app.kubernetes.io/part-of: tap-otel-demo
+spec:
+  source:
+    git:
+      url: https://github.com/alexandreroman/tap-otel-demo
+      ref:
+        branch: testing
+    subPath: shop
+  build:
+    env:
+    - name: BP_JVM_VERSION
+      value: "17"
+  params:
+  - name: annotations
+    value:
+      autoscaling.knative.dev/minScale: "1"
+      sidecar.opentelemetry.io/inject: "true"
+  env:
+  - name: SPRING_PROFILES_ACTIVE
+    value: kubernetes
+  resources:
+    requests:
+      memory: 1G
+      cpu: 1000m
+    limits:
+      memory: 1G
+---
+apiVersion: carto.run/v1alpha1
+kind: Workload
+metadata:
+  name: tap-otel-orders
+  labels:
+    #! Use workload-type server since Knative-based workloads does not have a stable DNS (it depends on the namespace name).
+    apps.tanzu.vmware.com/workload-type: server
+    apps.tanzu.vmware.com/has-tests: "true"
+    app.kubernetes.io/part-of: tap-otel-demo
+    networking.knative.dev/visibility: cluster-local
+spec:
+  source:
+    git:
+      url: https://github.com/alexandreroman/tap-otel-demo
+      ref:
+        branch: testing
+    subPath: orders
+  build:
+    env:
+    - name: BP_JVM_VERSION
+      value: "17"
+  params:
+  - name: annotations
+    value:
+      sidecar.opentelemetry.io/inject: "true"
+  env:
+  - name: SPRING_PROFILES_ACTIVE
+    value: kubernetes
+  resources:
+    requests:
+      memory: 1G
+      cpu: 1000m
+    limits:
+      memory: 1G
+---
+apiVersion: carto.run/v1alpha1
+kind: Workload
+metadata:
+  name: tap-otel-items
+  labels:
+    #! Use workload-type server since Knative-based workloads does not have a stable DNS (it depends on the namespace name).
+    apps.tanzu.vmware.com/workload-type: server
+    apps.tanzu.vmware.com/has-tests: "true"
+    app.kubernetes.io/part-of: tap-otel-demo
+spec:
+  source:
+    git:
+      url: https://github.com/alexandreroman/tap-otel-demo
+      ref:
+        branch: testing
+    subPath: items
+  build:
+    env:
+    - name: BP_JVM_VERSION
+      value: "17"
+  params:
+  - name: annotations
+    value:
+      sidecar.opentelemetry.io/inject: "true"
+  env:
+  - name: SPRING_PROFILES_ACTIVE
+    value: kubernetes
+  resources:
+    requests:
+      memory: 1G
+      cpu: 1000m
+    limits:
+      memory: 1G

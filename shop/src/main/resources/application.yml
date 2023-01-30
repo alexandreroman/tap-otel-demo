@@ -1,0 +1,33 @@
+management:
+  metrics:
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true
+    tags:
+      application: tap-otel-demo
+      service: ${spring.application.name}
+      source: ${spring.application.name}-${random.uuid}
+  tracing:
+    enabled: false
+    sampling:
+      probability: 1
+  otlp:
+    metrics:
+      export:
+        enabled: false
+        step: 30s
+logging:
+  pattern:
+    level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
+
+server:
+  port: ${PORT:8080}
+spring:
+  application:
+    name: tap-otel-shop
+
+app:
+  title: Welcome to SpringBootShop!
+  services:
+    orders: http://localhost:8081
+    items: http://localhost:8082

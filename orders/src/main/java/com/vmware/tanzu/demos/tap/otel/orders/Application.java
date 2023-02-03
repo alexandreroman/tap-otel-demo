@@ -64,6 +64,7 @@ class MetricsConf {
 
 @RestController
 class OrderController {
+    private static final Logger LOGGER = LoggerFactory.getLogger(OrderController.class);
     private static final Map<String, Order> ORDERS;
 
     static {
@@ -77,7 +78,6 @@ class OrderController {
         ORDERS = Map.of(o1.orderId(), o1, o2.orderId(), o2);
     }
 
-    private final Logger logger = LoggerFactory.getLogger(getClass());
     private final Random random = new Random();
     private final Counter hitCounter;
 
@@ -89,19 +89,19 @@ class OrderController {
     Order orders(@PathVariable("orderId") String orderId) throws InterruptedException {
         hitCounter.increment();
 
-        logger.info("Looking up order: {}", orderId);
+        LOGGER.info("Looking up order: {}", orderId);
         final var order = ORDERS.get(orderId);
 
         final var delay = random.nextLong(1000);
-        logger.debug("Slowing down orders service by {} ms", delay);
+        LOGGER.debug("Slowing down orders service by {} ms", delay);
         Thread.sleep(delay);
 
         if (order == null) {
-            logger.info("Order not found: {}", orderId);
+            LOGGER.info("Order not found: {}", orderId);
             // This error is mapped to a 404 HTTP response.
             throw new OrderNotFoundException(orderId);
         }
-        logger.info("Order {} found: {}", orderId, order);
+        LOGGER.info("Order {} found: {}", orderId, order);
         return order;
     }
 }

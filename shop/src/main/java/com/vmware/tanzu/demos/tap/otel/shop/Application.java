@@ -156,7 +156,7 @@ class MetricsConf {
 
 @RestController
 class IndexController {
-    private final Logger logger = LoggerFactory.getLogger(getClass());
+    private static final Logger LOGGER = LoggerFactory.getLogger(IndexController.class);
     private final Counter hitCounter;
     private final OrderServiceClient osc;
     private final ItemServiceClient isc;
@@ -171,7 +171,7 @@ class IndexController {
 
     @GetMapping("/")
     IndexPage index(@Value("${app.title}") String title) {
-        logger.info("Building content for index page");
+        LOGGER.info("Building content for index page");
         hitCounter.increment();
 
         // Use a static list for orders.
@@ -206,11 +206,11 @@ class IndexController {
         final var obs = Observation.start("shop.findOrder", reg);
         obs.lowCardinalityKeyValue("order", orderId);
 
-        logger.info("Fetching order details: {}", orderId);
+        LOGGER.info("Fetching order details: {}", orderId);
         try {
             return obs.observeChecked(() -> osc.findOrder(orderId));
         } catch (Exception e) {
-            logger.warn("Failed to get order details: {}", orderId, e);
+            LOGGER.warn("Failed to get order details: {}", orderId, e);
         }
         return null;
     }
@@ -219,11 +219,11 @@ class IndexController {
         final var obs = Observation.start("shop.findItem", reg);
         obs.lowCardinalityKeyValue("item", itemId);
 
-        logger.info("Fetching item details: {}", itemId);
+        LOGGER.info("Fetching item details: {}", itemId);
         try {
             return obs.observeChecked(() -> isc.findItem(itemId));
         } catch (Exception e) {
-            logger.warn("Failed to get item details: {}", itemId, e);
+            LOGGER.warn("Failed to get item details: {}", itemId, e);
         }
         return null;
     }

@@ -18,6 +18,7 @@ package com.vmware.tanzu.demos.tap.otel.orders;
 
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
+import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -34,6 +35,8 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+
+import static org.springframework.web.util.WebUtils.ERROR_EXCEPTION_ATTRIBUTE;
 
 enum OrderState {
     Draft, New, InProgress, OnHold, Completed, Canceled
@@ -122,11 +125,12 @@ class OrderNotFoundException extends RuntimeException {
 @RestControllerAdvice
 class OrderControllerAdvice {
     @ExceptionHandler(OrderNotFoundException.class)
-    ProblemDetail handleOrderNotFoundException(OrderNotFoundException e) {
+    ProblemDetail handleOrderNotFoundException(HttpServletRequest request, OrderNotFoundException e) {
         // Map this exception to a RFC 7807 entity (Problem Details for HTTP APIs).
         final var detail = ProblemDetail.forStatus(HttpStatus.NOT_FOUND);
         detail.setTitle(e.getMessage());
         detail.setType(URI.create("urn:problem-type:order-not-found"));
+        request.setAttribute(ERROR_EXCEPTION_ATTRIBUTE, e);
         return detail;
     }
 }

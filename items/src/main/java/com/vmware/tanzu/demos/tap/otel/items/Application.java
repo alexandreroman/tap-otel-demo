@@ -18,6 +18,7 @@ package com.vmware.tanzu.demos.tap.otel.items;
 
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
+import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -32,6 +33,8 @@ import org.springframework.web.bind.annotation.*;
 import java.net.URI;
 import java.util.Map;
 import java.util.Random;
+
+import static org.springframework.web.util.WebUtils.ERROR_EXCEPTION_ATTRIBUTE;
 
 @SpringBootApplication
 public class Application {
@@ -115,11 +118,12 @@ class ItemNotFoundException extends RuntimeException {
 @RestControllerAdvice
 class ItemControllerAdvice {
     @ExceptionHandler(ItemNotFoundException.class)
-    ProblemDetail handleItemNotFoundException(ItemNotFoundException e) {
+    ProblemDetail handleItemNotFoundException(HttpServletRequest request, ItemNotFoundException e) {
         // Map this exception to a RFC 7807 entity (Problem Details for HTTP APIs).
         final var detail = ProblemDetail.forStatus(HttpStatus.NOT_FOUND);
         detail.setTitle(e.getMessage());
         detail.setType(URI.create("urn:problem-type:item-not-found"));
+        request.setAttribute(ERROR_EXCEPTION_ATTRIBUTE, e);
         return detail;
     }
 }

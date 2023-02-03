@@ -68,6 +68,7 @@ public class Application {
 class MetricsConf {
     /**
      * Create a counter for the number of times the orders service was hit.
+     * This is for demo purpose.
      */
     @Bean
     @Qualifier("ordersServiceHitCounter")

@@ -142,6 +142,7 @@ record ServiceConf(String orders, String items) {
 class MetricsConf {
     /**
      * Create a counter for the number of times the index page was hit.
+     * This is for demo purpose.
      */
     @Bean
     @Qualifier("indexPageHitCounter")

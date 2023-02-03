@@ -206,7 +206,7 @@ You're done!
 The app should be built and deployed by TAP. Note that pods have one more container:
 the OpenTelemetry sidecar agent. As soon as an app module starts, it would connect to
 the agent, periodically pushing metrics and tracing spans. The agent collects those
-informations, and then takes care of forwarding everything to Aria.
+information, and then takes care of forwarding everything to Aria.
 
 ![Architecture diagram with app modules and OpenTelemetry agents](app-components.png)
 
@@ -243,11 +243,11 @@ for more information about Spring Boot and OpenTelemetry support.
 
 Of course, you can use your favorite framework and language with OpenTelemetry!
 
-## Visualize data collected by OpenTelemetry
+## Visualize data collected by OpenTelemetry with Aria
 
 Metrics and tracing spans are expected to land on Aria by now.
 
-From Aria you'll find ready-to-use dashboards, so that you can visualize data
+With Aria you'll find ready-to-use dashboards, so that you can visualize data
 from your Kubernetes clusters and the apps:
 
 ![Aria dashboard for Kubernetes clusters](aria-k8s-clusters.png)
@@ -255,6 +255,55 @@ from your Kubernetes clusters and the apps:
 ![Aria dashboard for tracing spans from apps](aria-tracing-spans.png)
 
 ![Aria dashboard for Spring Boot apps](aria-spring-boot.png)
+
+## Visualize data collected by OpenTelemetry with Grafana Cloud
+
+What about changing your observability solution?
+
+Let's switch to [Grafana Cloud](https://grafana.com/products/cloud) instead of Aria.
+
+Create an account (you can use the free trial), and then create an API key.
+
+Get the following information from your account dashboard:
+
+```shell
+export GRAFANA_CLOUD_API_KEY=your-api-key
+export GRAFANA_CLOUD_ZONE=your-instance-zone
+export GRAFANA_CLOUD_INSTANCE_ID=your-instance-id
+```
+
+You can now update the OpenTelemetry Collector configuration:
+
+```shell
+envsubst < config/app-operator/otel-grafana-cloud.yaml | kubectl apply -f- -n $TAP_NS
+```
+
+As soon as you restart your pods, a new OpenTelemetry Collector agent would run as a sidecar
+in pods, collecting metrics and tracing spans, and forwarding these information to
+Grafana Cloud. And you didn't have to make any updates to your app!
+
+Moreover, you can also collect logs out of your apps with Grafana Cloud.
+
+Get these information first:
+
+```shell
+export GRAFANA_CLOUD_LOKI_USER=your-loki-user
+```
+
+Then deploy Promtail, a component which is responsible for collecting logs from pods:
+
+```shell
+helm repo add grafana https://grafana.github.io/helm-charts
+helm repo update
+envsubst < config/platform-operator/charts/promtail-values.yaml > /tmp/promtail-values.yaml
+helm upgrade promtail -n promtail --create-namespace --install --version 6.8.2 -f /tmp/promtail-values.yaml grafana/promtail
+```
+
+In a few minutes, you'll be able to see logs, metrics and tracing spans in Grafana Cloud!
+
+![Grafana Cloud dashboard](grafana-cloud-tracing-spans.png)
+
+Hope it helps!
 
 ## Contribute
 

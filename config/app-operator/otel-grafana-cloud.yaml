@@ -1,0 +1,58 @@
+#! See this page for using OpenTelemetry with Grafana Cloud:
+#! https://grafana.com/docs/grafana-cloud/data-configuration/otlp/send-data-otlp/
+#! Run these commands to deploy this file:
+#! export GRAFANA_CLOUD_API_KEY=your-api-key
+#! export GRAFANA_CLOUD_ZONE=your-instance-zone
+#! export GRAFANA_CLOUD_INSTANCE_ID=your-instance-id
+#! envsubst < config/app-operator/otel-grafana-cloud.yaml | kubectl apply -f- -n $TAP_NS
+apiVersion: opentelemetry.io/v1alpha1
+kind: OpenTelemetryCollector
+metadata:
+  name: otel
+spec:
+  mode: sidecar
+  config: |
+    extensions:
+      basicauth/otlp:
+        client_auth:
+          username: $GRAFANA_CLOUD_INSTANCE_ID
+          password: $GRAFANA_CLOUD_API_KEY
+
+    receivers:
+      otlp:
+        protocols:
+          grpc:
+          http:
+      zipkin:
+
+    processors:
+      batch:
+        timeout: 10s
+      memory_limiter:
+        check_interval: 1s
+        limit_percentage: 50
+        spike_limit_percentage: 30
+      resource:
+        attributes:
+        - key: application
+          value: tap-otel-demo
+          action: upsert
+
+    exporters:
+      logging:
+      otlphttp:
+        auth:
+          authenticator: basicauth/otlp
+        endpoint: https://otlp-gateway-$GRAFANA_CLOUD_ZONE.grafana.net/otlp
+
+    service:
+      extensions: [basicauth/otlp]
+      pipelines:
+        traces:
+          receivers: [zipkin]
+          processors: [resource, memory_limiter, batch]
+          exporters: [otlphttp, logging]
+        metrics:
+          receivers: [otlp]
+          processors: [resource, memory_limiter, batch]
+          exporters: [otlphttp, logging]

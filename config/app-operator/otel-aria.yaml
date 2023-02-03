@@ -37,6 +37,7 @@ spec:
           endpoint: http://wavefront-proxy.wavefront.svc.cluster.local:2878
         metrics:
           endpoint: http://wavefront-proxy.wavefront.svc.cluster.local:2878
+
     service:
       pipelines:
         traces:

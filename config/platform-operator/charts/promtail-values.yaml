@@ -1,0 +1,10 @@
+#! helm repo add grafana https://grafana.github.io/helm-charts
+#! helm repo update
+#! envsubst < config/platform-operator/charts/promtail-values.yaml > /tmp/promtail-values.yaml
+#! helm upgrade promtail -n promtail --create-namespace --install --version 6.8.2 -f /tmp/promtail-values.yaml grafana/promtail
+config:
+  clients:
+  - url: https://logs-$GRAFANA_CLOUD_ZONE.grafana.net/loki/api/v1/push
+    basic_auth:
+      username: $GRAFANA_CLOUD_LOKI_USER
+      password: $GRAFANA_CLOUD_API_KEY

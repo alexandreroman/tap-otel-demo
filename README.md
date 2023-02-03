@@ -105,6 +105,7 @@ between the different app modules:
 ![Screenshot of Zipkin showing tracing spans between modules](zipkin.png)
 
 Those network requests have been instrumented thanks to
+[Micrometer metrics](https://micrometer.io) and
 [Micrometer Tracing](https://micrometer.io/docs/tracing)
 (a Java library for handling metrics and tracing spans).
 

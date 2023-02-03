@@ -38,18 +38,6 @@ public class Application {
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
     }
-
-    /**
-     * Create an in-memory list of items.
-     */
-    @Bean
-    @Qualifier("items")
-    Map<String, OrderItem> createItems() {
-        final var i1 = new OrderItem("41a1c650-df66-46d0-b7fb-96a117c5dda7", "Hat: Spring Boot FTW", "100");
-        final var i2 = new OrderItem("e5b6da9d-ba51-4119-b527-ace1aaa7985e", "Laptop sticker: I love Java", "15");
-        final var i3 = new OrderItem("dc68e695-e8c3-4bc9-9531-28aed4a6ecd6", "T-shirt: Kubernetes is boring", "27");
-        return Map.of(i1.itemId(), i1, i2.itemId(), i2, i3.itemId(), i3);
-    }
 }
 
 /**
@@ -70,14 +58,23 @@ class MetricsConf {
 
 @RestController
 class ItemController {
+    private static final Map<String, OrderItem> ITEMS;
+
+    static {
+        // Create an in-memory list of items.
+        final var i1 = new OrderItem("41a1c650-df66-46d0-b7fb-96a117c5dda7", "Hat: Spring Boot FTW", "100");
+        final var i2 = new OrderItem("e5b6da9d-ba51-4119-b527-ace1aaa7985e", "Laptop sticker: I love Java", "15");
+        final var i3 = new OrderItem("dc68e695-e8c3-4bc9-9531-28aed4a6ecd6", "T-shirt: Kubernetes is boring", "27");
+        ITEMS = Map.of(i1.itemId(), i1, i2.itemId(), i2, i3.itemId(), i3);
+
+    }
+
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final Random random = new Random();
     private final Counter hitCounter;
-    private final Map<String, OrderItem> items;
 
-    public ItemController(@Qualifier("items") Map<String, OrderItem> items, @Qualifier("itemsServiceHitCounter") Counter hitCounter) {
+    public ItemController(@Qualifier("itemsServiceHitCounter") Counter hitCounter) {
         this.hitCounter = hitCounter;
-        this.items = items;
     }
 
     @GetMapping("/api/v1/items/{itemId}")
@@ -85,7 +82,7 @@ class ItemController {
         hitCounter.increment();
 
         logger.info("Looking up items: {}", itemId);
-        final var item = items.get(itemId);
+        final var item = ITEMS.get(itemId);
 
         final var delay = random.nextLong(1000);
         logger.debug("Slowing down items service by {} ms", delay);

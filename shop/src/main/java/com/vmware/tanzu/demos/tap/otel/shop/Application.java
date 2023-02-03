@@ -204,7 +204,7 @@ class IndexController {
 
     private Order fetchOrder(String orderId) {
         final var obs = Observation.start("shop.findOrder", reg);
-        obs.lowCardinalityKeyValue("order", orderId);
+        obs.highCardinalityKeyValue("order", orderId);
 
         LOGGER.info("Fetching order details: {}", orderId);
         try {
@@ -217,7 +217,7 @@ class IndexController {
 
     private OrderItem fetchOrderItem(String itemId) {
         final var obs = Observation.start("shop.findItem", reg);
-        obs.lowCardinalityKeyValue("item", itemId);
+        obs.highCardinalityKeyValue("item", itemId);
 
         LOGGER.info("Fetching item details: {}", itemId);
         try {

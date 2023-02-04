@@ -139,7 +139,7 @@ At this point, you can deploy an OpenTelemetry Collector to your TAP developer
 namespace (`$TAS_NS`):
 
 ```shell
-kubectl apply -f config/app-operator/otel.yaml -n $TAS_NS
+kubectl apply -f config/app-operator/otel-aria.yaml -n $TAS_NS
 ```
 
 This collector is responsible for forwarding metrics and tracing spans

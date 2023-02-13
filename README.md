@@ -136,10 +136,10 @@ helm upgrade opentelemetry-operator -n opentelemetry-operator-system --create-na
 ```
 
 At this point, you can deploy an OpenTelemetry Collector to your TAP developer
-namespace (`$TAS_NS`):
+namespace (`$TAP_NS`):
 
 ```shell
-kubectl apply -f config/app-operator/otel-aria.yaml -n $TAS_NS
+kubectl apply -f config/app-operator/otel-aria.yaml -n $TAP_NS
 ```
 
 This collector is responsible for forwarding metrics and tracing spans

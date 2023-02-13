@@ -124,7 +124,7 @@ kubectl apply -f config/platform-operator/wavefront-ns.yaml -f config/platform-o
 export WAVEFRONT_API=https//XXX.wavefront.com
 export WAVEFRONT_TOKEN=<token>
 envsubst < config/platform-operator/charts/wavefront-values.yaml > /tmp/wavefront-values.yaml
-helm upgrade wavefront -n wavefront --install --version 4.2.9 -f /tmp/wavefront-values.yaml bitnami/wavefront
+helm upgrade wavefront -n wavefront --install --version 4.2.10 -f /tmp/wavefront-values.yaml bitnami/wavefront
 ```
 
 Next, you need to deploy OpenTelemetry Operator for Kubernetes:

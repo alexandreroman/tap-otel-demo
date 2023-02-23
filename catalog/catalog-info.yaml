@@ -10,7 +10,7 @@ metadata:
   - web
   - tanzu
   annotations:
-    'backstage.io/kubernetes-label-selector': 'app.kubernetes.io/part-of=tap-otel-demo'
+    backstage.io/kubernetes-label-selector: app.kubernetes.io/part-of=tap-otel-demo
   links:
   - url: https://longboard.wavefront.com/dashboards/integration-kubernetes-clusters
     title: Dashboard Aria for Apps

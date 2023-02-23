@@ -20,7 +20,7 @@ spec:
   params:
   - name: annotations
     value:
-      autoscaling.knative.dev/minScale: "1"
+      autoscaling.knative.dev/min-scale: "1"
       sidecar.opentelemetry.io/inject: "true"
   env:
   - name: SPRING_PROFILES_ACTIVE
